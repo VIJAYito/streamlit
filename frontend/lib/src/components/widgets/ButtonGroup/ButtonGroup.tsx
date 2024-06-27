@@ -31,6 +31,7 @@ import { ButtonGroup as ButtonGroupProto } from "@streamlit/lib/src/proto"
 import { WidgetStateManager } from "@streamlit/lib/src/WidgetStateManager"
 import StreamlitMarkdown from "@streamlit/lib/src/components/shared/StreamlitMarkdown"
 import { iconSizes } from "@streamlit/lib/src/theme/primitives"
+import { FormClearHelper } from "@streamlit/lib/src/components/widgets/Form/FormClearHelper"
 
 const materialIconRegexp = /^:material\/(.+):$/
 
@@ -40,6 +41,9 @@ export interface Props {
   widgetMgr: WidgetStateManager
   fragmentId?: string
 }
+
+// TODO: use initialValue behavior like Multiselect is doing it?
+// TODO: see commit widget value of multi-select widget -> should we do the same?
 
 function handleMultiSelection(
   index: number,
@@ -73,9 +77,10 @@ function syncValue(
   selected: number[],
   element: ButtonGroupProto,
   widgetMgr: WidgetStateManager,
-  fragmentId?: string
+  fragmentId?: string,
+  fromUi = true
 ): void {
-  widgetMgr.setIntArrayValue(element, selected, { fromUi: true }, fragmentId)
+  widgetMgr.setIntArrayValue(element, selected, { fromUi: fromUi }, fragmentId)
 }
 
 function getMaterialIcon(option: string): string | undefined {
@@ -84,7 +89,7 @@ function getMaterialIcon(option: string): string | undefined {
 }
 
 function getContentElement(content: string): ReactElement {
-  const fontSize = "md"
+  const fontSize = "lg"
   const isMaterialIcon = !!getMaterialIcon(content)
   if (isMaterialIcon) {
     return <DynamicIcon size={fontSize} iconValue={content} />
@@ -209,15 +214,40 @@ function ButtonGroup(props: Readonly<Props>): ReactElement {
     value,
     selectionVisualization,
   } = element
+
+  const elementRef = React.useRef(element)
   const theme: EmotionTheme = useTheme()
 
   const [selected, setSelected] = useState<number[]>(defaultValues || [])
 
+  // This is required for the form clearing functionality:
+  useEffect(() => {
+    console.log("In listener")
+    if (!element.formId) {
+      // We don't need the form clear functionality if its not in a form
+      // or if selections are not activated.
+      return
+    }
+
+    const formClearHelper = new FormClearHelper()
+    // On form clear, reset the selections (in chart & widget state)
+    formClearHelper.manageFormClearListener(widgetMgr, element.formId, () => {
+      setSelected(defaultValues)
+      syncValue(defaultValues, element, widgetMgr, fragmentId)
+    })
+
+    return () => {
+      formClearHelper.disconnect()
+    }
+  }, [element.formId, widgetMgr, defaultValues, element, fragmentId])
+
   useEffect(() => {
     if (setValue) {
       setSelected(value)
+    } else {
+      syncValue(selected, elementRef.current, widgetMgr, fragmentId, false)
     }
-  }, [value, setValue])
+  }, [selected, widgetMgr, fragmentId, value, setValue])
 
   const onClick = (
     _event: React.SyntheticEvent<HTMLButtonElement>,
