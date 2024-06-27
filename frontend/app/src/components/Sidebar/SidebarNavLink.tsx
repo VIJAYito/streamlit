@@ -24,6 +24,7 @@ import {
 } from "./styled-components"
 
 export interface SidebarNavLinkProps {
+  isCustomTheme: boolean
   isActive: boolean
   pageUrl: string
   icon: string | undefined | null
@@ -32,6 +33,7 @@ export interface SidebarNavLinkProps {
 }
 
 const SidebarNavLink = ({
+  isCustomTheme,
   isActive,
   pageUrl,
   icon,
@@ -42,12 +44,16 @@ const SidebarNavLink = ({
     <StyledSidebarNavLinkContainer>
       <StyledSidebarNavLink
         data-testid="stSidebarNavLink"
+        isCustomTheme={isCustomTheme}
         isActive={isActive}
         href={pageUrl}
         onClick={onClick}
       >
         {icon && icon.length && <DynamicIcon size="md" iconValue={icon} />}
-        <StyledSidebarLinkText isActive={isActive}>
+        <StyledSidebarLinkText
+          isActive={isActive}
+          isCustomTheme={isCustomTheme}
+        >
           {children}
         </StyledSidebarLinkText>
       </StyledSidebarNavLink>

@@ -45,18 +45,26 @@ const createSidebarTheme = (theme: ThemeConfig): ThemeConfig => {
 const ThemedSidebar = ({
   children,
   ...sidebarProps
-}: Omit<SidebarProps, "chevronDownshift" | "theme">): ReactElement => {
+}: Omit<
+  SidebarProps,
+  "chevronDownshift" | "theme" | "isCustomTheme"
+>): ReactElement => {
   const { sidebarChevronDownshift: chevronDownshift } =
     React.useContext(AppContext)
   const { activeTheme } = React.useContext(LibContext)
   const sidebarTheme = createSidebarTheme(activeTheme)
+  const isCustomTheme = activeTheme.name === "Custom Theme"
 
   return (
     <ThemeProvider
       theme={sidebarTheme.emotion}
       baseuiTheme={sidebarTheme.basewebTheme}
     >
-      <Sidebar {...sidebarProps} chevronDownshift={chevronDownshift}>
+      <Sidebar
+        {...sidebarProps}
+        chevronDownshift={chevronDownshift}
+        isCustomTheme={isCustomTheme}
+      >
         {children}
       </Sidebar>
     </ThemeProvider>

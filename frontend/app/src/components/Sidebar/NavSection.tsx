@@ -20,17 +20,21 @@ import { StyledSidebarNavSectionHeader } from "./styled-components"
 
 export interface NavSectionProps {
   header?: string
+  isCustomTheme: boolean
   children: ReactElement[]
 }
 
 const NavSection = ({
   header = "",
+  isCustomTheme,
   children,
 }: NavSectionProps): ReactElement => {
   return (
     <>
       {header && (
-        <StyledSidebarNavSectionHeader>{header}</StyledSidebarNavSectionHeader>
+        <StyledSidebarNavSectionHeader isCustomTheme={isCustomTheme}>
+          {header}
+        </StyledSidebarNavSectionHeader>
       )}
       {children}
     </>

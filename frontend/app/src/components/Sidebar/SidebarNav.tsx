@@ -45,6 +45,7 @@ export interface Props {
   currentPageScriptHash: string
   hasSidebarElements: boolean
   onPageChange: (pageName: string) => void
+  isCustomTheme: boolean
 }
 
 /** Displays a list of navigable app page links for multi-page apps. */
@@ -56,6 +57,7 @@ const SidebarNav = ({
   hasSidebarElements,
   navSections,
   onPageChange,
+  isCustomTheme,
 }: Props): ReactElement | null => {
   const [expanded, setExpanded] = useState(false)
   const navItemsRef = useRef<HTMLUListElement>(null)
@@ -76,6 +78,7 @@ const SidebarNav = ({
       return (
         <li key={pageName}>
           <SidebarNavLink
+            isCustomTheme={isCustomTheme}
             isActive={isActive}
             pageUrl={pageUrl}
             icon={page.icon}
@@ -98,6 +101,7 @@ const SidebarNav = ({
       endpoints,
       onPageChange,
       pageLinkBaseUrl,
+      isCustomTheme,
     ]
   )
 
@@ -110,7 +114,7 @@ const SidebarNav = ({
     // For MPAv2: renders each NavSection with its respective header
     contents = navSections.map(header => {
       return (
-        <NavSection key={header} header={header}>
+        <NavSection key={header} header={header} isCustomTheme={isCustomTheme}>
           {(pagesBySectionHeader[header] ?? []).map(generateNavLinks)}
         </NavSection>
       )

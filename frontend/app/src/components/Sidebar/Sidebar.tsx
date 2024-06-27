@@ -52,6 +52,7 @@ import SidebarNav from "./SidebarNav"
 export interface SidebarProps {
   endpoints: StreamlitEndpoints
   chevronDownshift: number
+  isCustomTheme: boolean
   children?: ReactElement
   initialSidebarState?: PageConfig.SidebarState
   theme: EmotionTheme
@@ -284,7 +285,7 @@ class Sidebar extends PureComponent<SidebarProps, State> {
             data-testid="collapsedControl"
           >
             {this.renderLogo(true)}
-            <StyledOpenSidebarButton>
+            <StyledOpenSidebarButton isCustomTheme={this.props.isCustomTheme}>
               <BaseButton
                 kind={BaseButtonKind.HEADER_NO_PADDING}
                 onClick={this.toggleCollapse}
@@ -332,6 +333,7 @@ class Sidebar extends PureComponent<SidebarProps, State> {
               {this.renderLogo(false)}
               <StyledCollapseSidebarButton
                 showSidebarCollapse={showSidebarCollapse}
+                isCustomTheme={this.props.isCustomTheme}
                 data-testid="stSidebarCollapseButton"
               >
                 <BaseButton
@@ -351,6 +353,7 @@ class Sidebar extends PureComponent<SidebarProps, State> {
                 navSections={navSections}
                 hasSidebarElements={hasElements}
                 onPageChange={onPageChange}
+                isCustomTheme={this.props.isCustomTheme}
               />
             )}
             <StyledSidebarUserContent
